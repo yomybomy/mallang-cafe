@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>나의 말랑 카페</title>
+<meta name="theme-color" content="#F6A6C1">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="말랑 카페">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&display=swap" rel="stylesheet">
+<style>
+:root{--cream:#FFF8EE;--pink:#F6A6C1;--pink2:#FDE3EC;--pinkd:#C9567F;--yel:#FFD45E;--yel2:#FFF3C7;--yeld:#8A6400;--brown:#5B3A2E;--brown2:#9C7B6C;--line:#F5D3DE}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--cream);color:var(--brown);font-family:"Gowun Dodum",system-ui,sans-serif;font-size:15px;line-height:1.5}
+.wrap{max-width:480px;margin:0 auto;padding:calc(env(safe-area-inset-top) + 14px) 14px calc(env(safe-area-inset-bottom) + 40px)}
+h1,h2,.jua{font-family:"Jua",sans-serif;font-weight:400;margin:0}
+h2{font-size:19px;margin-bottom:10px}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.top h1{font-size:24px;display:flex;align-items:center;gap:6px}
+.top h1 button{background:none;border:none;color:var(--brown2);font-size:14px;cursor:pointer;padding:2px 4px}
+.coin{background:var(--yel);color:var(--yeld);border-radius:20px;padding:4px 12px;font-family:"Jua";font-size:16px}
+.hero{position:relative;border-radius:24px;overflow:hidden;border:3px solid #fff;box-shadow:0 6px 0 var(--line)}
+.hero img{display:block;width:100%;aspect-ratio:1/1;object-fit:cover}
+.badge{position:absolute;left:10px;top:10px;background:#fff;border-radius:16px;padding:8px 12px;min-width:150px;box-shadow:0 3px 0 var(--line)}
+.badge .lv{font-size:12px;color:var(--brown2)}
+.badge .nm{font-family:"Jua";font-size:17px;color:var(--pinkd)}
+.bar{height:10px;background:var(--pink2);border-radius:6px;overflow:hidden;margin-top:5px}
+.bar i{display:block;height:100%;background:var(--pink);border-radius:6px;transition:width .4s}
+.bar.y{background:var(--yel2)}.bar.y i{background:var(--yel)}
+.card{background:#fff;border-radius:20px;padding:16px;margin-top:14px;box-shadow:0 4px 0 var(--line)}
+.sub{font-size:13px;color:var(--brown2)}
+.inv{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.inv div{background:var(--yel2);border-radius:14px;text-align:center;padding:8px 2px}
+.inv .e{font-size:22px;line-height:1.2}.inv .n{font-family:"Jua";font-size:16px;color:var(--yeld)}.inv .l{font-size:11px;color:var(--brown2)}
+.q{display:flex;align-items:center;gap:12px;padding:11px 4px;border-top:1px dashed var(--line);cursor:pointer;user-select:none}
+.q:first-of-type{border-top:none}
+.ck{flex:0 0 28px;height:28px;border-radius:10px;border:2.5px solid var(--pink);display:flex;align-items:center;justify-content:center;font-size:16px;color:#fff;transition:.15s}
+.q.on .ck{background:var(--pink);border-color:var(--pink)}
+.q.on .qt{color:var(--brown2);text-decoration:line-through}
+.qt{flex:1}.qt small{display:block;font-size:12px;color:var(--brown2);text-decoration:none}
+.rw{font-size:13px;background:var(--yel2);color:var(--yeld);border-radius:10px;padding:2px 8px;white-space:nowrap}
+.grp{border-top:1px dashed var(--line);padding:12px 0 4px}
+.grp:first-child{border-top:none;padding-top:4px}
+.gh{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.gh .jua{font-size:16px}
+.gt{font-size:12px;color:var(--brown2);margin:2px 0 8px}
+.meal{display:flex;gap:8px;align-items:flex-start;margin:6px 0}
+.meal .ml{flex:0 0 34px;font-family:"Jua";font-size:14px;padding-top:6px;color:var(--pinkd)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:2px solid var(--line);background:#fff;border-radius:16px;padding:5px 11px;font-size:13px;cursor:pointer;user-select:none;color:var(--brown);font-family:inherit}
+.chip.on{background:var(--pink);border-color:var(--pink);color:#fff}
+.chip.sub.on{background:var(--yel);border-color:var(--yel);color:var(--yeld)}
+.chip.x{border-style:dashed}
+.chip.x.on{background:#EFE6E1;border-color:#C9B6AB;color:var(--brown)}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;vertical-align:1px}
+.chip.on .dot{box-shadow:0 0 0 2px #fff}
+.legend{display:flex;gap:12px;font-size:12px;color:var(--brown2);margin-bottom:6px}
+.mealbox{border:2px solid var(--line);border-radius:16px;margin-top:8px;padding:0 10px}
+.mealbox.open{padding-bottom:12px;background:#FFFCF7}
+.mhead{width:100%;display:flex;align-items:center;gap:8px;background:none;border:none;padding:10px 0;cursor:pointer;color:var(--brown);font:inherit;text-align:left;flex-wrap:wrap}
+.mhead .jua{font-size:16px;color:var(--pinkd);min-width:34px}
+.chev{margin-left:auto;font-size:11px;color:var(--brown2)}
+.chip.beh{border-color:#F7DC8E}
+.chip.beh.on{background:var(--yel);border-color:var(--yel);color:var(--yeld)}
+.link{background:none;border:none;color:var(--pinkd);font:inherit;font-size:13px;text-decoration:underline;cursor:pointer;padding:10px 0 0}
+.rep{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.rep div{background:var(--cream);border-radius:12px;padding:8px 10px;font-size:12px;color:var(--brown2)}
+.rep b{display:block;font-family:"Jua";font-weight:400;font-size:17px;color:var(--brown)}
+.rep .bad b{color:#A26B5A}
+.menu{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.mi{background:var(--cream);border-radius:16px;padding:8px 6px 10px;text-align:center;border:2px solid transparent;cursor:pointer;position:relative}
+.mi img{width:100%;max-width:84px;aspect-ratio:1;display:block;margin:0 auto 4px}
+.mi .mn{font-family:"Jua";font-size:14px}
+.mi .mc{font-size:11px;color:var(--brown2);min-height:16px}
+.mi.lock img{filter:grayscale(1) opacity(.35)}
+.mi.can{border-color:var(--yel);background:var(--yel2)}
+.mi.own{background:var(--pink2)}
+.mi.own .mc{color:var(--pinkd)}
+.mi .tag{position:absolute;top:6px;right:6px;font-size:10px;background:var(--yel);color:var(--yeld);border-radius:8px;padding:1px 6px}
+.week{display:flex;justify-content:space-between;gap:4px}
+.week div{flex:1;text-align:center;font-size:11px;color:var(--brown2)}
+.week b{display:block;margin:0 auto 4px;width:30px;height:30px;border-radius:50%;background:var(--pink2);font-family:"Jua";font-weight:400;font-size:12px;line-height:30px;color:var(--pinkd)}
+.week b.full{background:var(--pink);color:#fff}.week b.half{background:#F9C6D7}
+.week .today b{outline:2.5px solid var(--yel);outline-offset:1px}
+.goal{display:flex;align-items:center;gap:10px;margin:8px 0}
+.goal .num{font-family:"Jua";font-size:26px}
+.goal .to{color:var(--brown2)}
+.row{display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap}
+input[type=date],input[type=number],input[type=text]{font:inherit;color:var(--brown);border:2px solid var(--line);border-radius:12px;padding:6px 10px;background:var(--cream)}
+input[type=number]{width:80px}
+.btn{font-family:"Jua";font-size:15px;border:none;border-radius:14px;padding:10px 16px;background:var(--pink);color:#fff;cursor:pointer}
+.btn.y{background:var(--yel);color:var(--yeld)}.btn.ghost{background:var(--pink2);color:var(--pinkd)}
+.err{font-size:13px;color:#C0392B;margin-top:6px;min-height:0}
+.tip{background:var(--pink2);border-radius:14px;padding:10px 12px;font-size:13px;margin-top:10px}
+.toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 24px);transform:translateX(-50%) translateY(120px);background:var(--brown);color:#fff;border-radius:16px;padding:10px 18px;font-family:"Jua";font-size:15px;transition:transform .3s;z-index:9;max-width:90%;text-align:center}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.modal{position:fixed;inset:0;background:rgba(91,58,46,.45);display:none;align-items:center;justify-content:center;z-index:10;padding:20px}
+.modal.show{display:flex}
+.modal .box{background:#fff;border-radius:24px;padding:20px;max-width:340px;width:100%;text-align:center}
+.modal img{width:120px}
+.save{font-size:11px;color:var(--brown2);text-align:center;margin-top:18px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <h1><span id="cafeName">말랑 카페</span><button id="rename" aria-label="카페 이름 바꾸기">✎</button></h1>
+    <div class="coin" id="xpTotal">★ 0</div>
+  </div>
+
+  <div class="hero">
+    <img id="heroImg" src="img/cafe1.png" alt="내 카페 모습">
+    <div class="badge">
+      <div class="lv" id="lvText">Lv.1</div>
+      <div class="nm" id="lvName">작은 동네 카페</div>
+      <div class="bar"><i id="lvBar" style="width:0%"></i></div>
+      <div class="sub" id="lvNext" style="font-size:11px;margin-top:3px"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>오늘의 기록</h2>
+    <div class="sub" id="todayText" style="margin:-6px 0 4px"></div>
+    <div id="log"></div>
+  </div>
+
+  <div class="card">
+    <h2>재료 창고</h2>
+    <div class="inv" id="inv"></div>
+    <div class="sub" style="margin-top:8px">좋은 습관을 기록하면 재료가 들어와요. 재료로 새 메뉴를 만들어요.</div>
+  </div>
+
+  <div class="card">
+    <h2>메뉴판</h2>
+    <div class="menu" id="menu"></div>
+    <div class="tip">케이크가 당길 땐 먹는 대신 메뉴판에 올려 보세요. 진짜로 먹는다면 식사 직후에 반 조각만!</div>
+  </div>
+
+  <div class="card">
+    <h2>이번 주 기록</h2>
+    <div class="week" id="week"></div>
+    <div class="row" style="justify-content:space-between;margin-top:14px">
+      <span class="jua" style="font-size:16px">운동 연속</span><span class="sub" id="streakText"></span>
+    </div>
+    <div class="bar y"><i id="streakBar"></i></div>
+    <div class="sub" id="streakNext" style="margin-top:4px"></div>
+    <div class="jua" style="font-size:16px;margin-top:16px">최근 7일 리포트</div>
+    <div class="rep" id="report"></div>
+    <div class="tip" id="repTip"></div>
+  </div>
+
+  <div class="card">
+    <h2>당화혈색소 목표</h2>
+    <div class="goal"><span class="num" id="gStart">–</span><span class="to">%  →  목표</span><span class="num" style="color:var(--pinkd)" id="gGoal">–</span><span class="to">%</span></div>
+    <div class="row">
+      <label class="sub">시작 <input type="number" step="0.1" min="3" max="15" id="startIn" placeholder="0.0"></label>
+      <label class="sub">목표 <input type="number" step="0.1" min="3" max="15" id="goalIn" placeholder="0.0"></label>
+      <button class="btn y" id="saveGoal">저장</button>
+    </div>
+    <div class="err" id="goalErr"></div>
+    <div class="sub" id="dday">재검 날짜를 넣으면 D-day가 보여요.</div>
+    <div class="row">
+      <label class="sub">재검일 <input type="date" id="retest"></label>
+    </div>
+    <div class="row">
+      <label class="sub">최근 결과 <input type="number" step="0.1" min="3" max="15" id="latest" placeholder="0.0"></label>
+      <button class="btn y" id="saveLatest">기록</button>
+    </div>
+    <div class="err" id="latestErr"></div>
+    <div class="sub" id="history" style="margin-top:6px"></div>
+  </div>
+
+  <div class="card">
+    <h2>백업</h2>
+    <div class="sub">기록 전체를 글자로 복사해 메모장이나 카톡 나에게 보내기에 붙여 두세요. 나중에 아래 칸에 붙여 넣으면 그대로 돌아와요.</div>
+    <div class="row"><button class="btn y" id="bkCopy">백업 복사</button><span class="sub" id="bkInfo"></span></div>
+    <textarea id="bkOut" readonly style="display:none;width:100%;height:70px;margin-top:8px;font-size:11px;border:2px solid var(--line);border-radius:12px;padding:6px;background:var(--cream);color:var(--brown)"></textarea>
+    <div class="jua" style="font-size:15px;margin-top:14px">백업 불러오기</div>
+    <textarea id="bkIn" placeholder="복사해 둔 백업을 여기에 붙여 넣으세요" style="width:100%;height:60px;margin-top:6px;font-size:12px;border:2px solid var(--line);border-radius:12px;padding:6px;background:#fff;color:var(--brown)"></textarea>
+    <div class="row" style="margin-top:6px"><button class="btn ghost" id="bkLoad">불러오기</button></div>
+    <div class="err" id="bkErr"></div>
+  </div>
+
+  <div class="save" id="saveState">저장 준비 중…</div>
+</div>
+
+<div class="toast" id="toast"></div>
+<div class="modal" id="modal"><div class="box">
+  <img id="mImg" alt="">
+  <h2 id="mTitle" style="margin-top:8px"></h2>
+  <div class="sub" id="mText" style="margin:6px 0 14px"></div>
+  <div id="mBtns"></div>
+</div></div>
+
+<script>
+
+const ING={milk:{e:"🥛",n:"우유"},mint:{e:"🌿",n:"민트"},berry:{e:"🍓",n:"딸기"},flour:{e:"🌾",n:"밀가루"},bean:{e:"☕",n:"커피콩"},lemon:{e:"🍋",n:"레몬"},honey:{e:"🍯",n:"꿀"}};
+const MEALS=[["b","아침"],["l","점심"],["d","저녁"]];
+const CAT={c:["탄수","#F2C14E"],p:["단백질","#EE7FA6"],v:["채소","#7BC47F"],f:["과일","#F59A5B"]};
+const FOODS=[
+ ["rice","밥","c"],["nurung","누룽지","c"],["bread","빵·떡","c"],["noodle","면","c"],["potato","고구마·감자·옥수수","c"],["porridge","죽","c"],
+ ["egg","계란","p"],["meat","고기","p"],["fish","생선·해산물","p"],["tofu","두부·콩","p"],["yog","그릭요거트","p"],["soy","두유·우유","p"],["cheese","치즈","p"],["nuts","견과","p"],
+ ["veg","채소·나물","v"],["salad","샐러드·쌈","v"],["kimchi","김치","v"],["mush","버섯·해조류","v"],
+ ["fruitS","과일 조금 (주먹 하나 이하)","f"],["fruitL","과일 많이","f"]
+];
+const FOOD={};FOODS.forEach(([id,t,c])=>FOOD[id]={t,c});
+const SCHOOL=[["l_sp","단백질 반찬 챙겨 먹음","p"],["l_sv","채소 반찬 먹음","v"],["l_first","채소·반찬 먼저"],["l_sless","밥 조금 덜기"],["l_spass","후식·단음료 패스"],["l_w","식후 10분 걷기"]];
+const ITEMS={};
+const add=(id,o)=>{ITEMS[id]=Object.assign({id},o)};
+MEALS.forEach(([m])=>{FOODS.forEach(([f])=>add(m+"_"+f,{meal:m,food:f}));add(m+"_first",{meal:m,beh:1});add(m+"_w",{meal:m,beh:1,ex:1});add(m+"_p",{meal:m,legacy:"p"});add(m+"_v",{meal:m,legacy:"v"});add(m+"_c",{meal:m,legacy:"c"});add(m+"_f",{meal:m,legacy:"first"})});
+SCHOOL.forEach(([id])=>{if(!ITEMS[id])add(id,{meal:"l",school:1})});
+add("l_school",{marker:1});add("l_self",{marker:1});
+const GROUPS=[
+ {id:"ex",t:"운동",tip:"식후 걷기는 그 끼니 혈당을 바로 낮추고, 근력 운동은 근육이 당을 쓰는 힘을 키워요.",items:[
+   ["walk30","30분 이상 걷기·유산소","bean"],["strength","근력 운동 10분+","bean"],["steps","7천 보 이상","bean"],["stairs","계단·스트레칭","bean"]]},
+ {id:"sn",t:"간식·음료",tip:"단음료 끊기가 1순위예요. 당길 때 대체 간식으로 바꿨다면 그것도 칭찬받을 일이에요.",items:[
+   ["nodrink","단음료 안 마심","lemon"],["nodessert","단독 디저트 없음","honey"],["nonight","야식 없음","honey"],["noalc","술 없음·1잔 이하","lemon"]]},
+ {id:"sub",t:"대체 간식으로 바꿨어요",tip:"단 게 당길 때 이걸로 바꿨다면 탭! 식후에 소량이면 더 좋아요.",cap:"honey",items:[
+   ["s_choc","다크초콜릿·키세스 소량"],["s_nut","견과 한 줌"],["s_yog","플레인 그릭요거트"],["s_fruit","과일+견과"],["s_latte","무가당 두유·우유 라떼"],["s_zero","탄산수·제로음료"]]},
+ {id:"life",t:"생활 습관",tip:"잠이 부족하면 다음 날 혈당과 식욕이 함께 올라가요. 물은 단음료 자리를 채우는 용도로 좋아요.",items:[
+   ["sleep","7시간 이상 잠","milk"],["water","물·차 6잔 이상","lemon"],["meals3","세 끼 거르지 않음","flour"]]},
+ {id:"x",t:"솔직 기록",tip:"점수는 깎이지 않아요. 주간 리포트에만 보여서 내 패턴을 알 수 있어요.",items:[
+   ["x_drink","단음료 마심"],["x_dessert","케이크·디저트"],["x_ice","아이스크림"],["x_night","야식"],["x_alc","술 2잔 이상"],["x_fry","면·분식+튀김"]]}
+];
+GROUPS.forEach(g=>g.items.forEach(([id,t,ing])=>add(id,{t,ing:g.cap?null:ing,grp:g.id,ex:g.id==="ex"?1:0,cap:g.cap,x:g.id==="x"})));
+const CONFLICT={x_drink:"nodrink",x_dessert:"nodessert",x_ice:"nodessert",x_night:"nonight",x_alc:"noalc"};
+Object.entries(CONFLICT).forEach(([a,b])=>{(ITEMS[b].against=ITEMS[b].against||[]).push(a)});
+const OLD={protein:"b_p",walkL:"l_w",walkD:"d_w",veg:"l_f"};
+
+function mealInfo(arr,m){const has=id=>arr.includes(id);
+  const foods=arr.filter(id=>ITEMS[id]&&ITEMS[id].meal===m&&ITEMS[id].food).map(id=>FOOD[ITEMS[id].food]);
+  const school=m==="l"&&has("l_school");
+  const p=foods.some(f=>f.c==="p")||has(m+"_p")||(school&&has("l_sp"));
+  const v=foods.some(f=>f.c==="v")||has(m+"_v")||(school&&has("l_sv"));
+  const c=foods.some(f=>f.c==="c");
+  const fs=has(m+"_fruitS"),fl=has(m+"_fruitL");
+  const any=foods.length>0||p||v||(school&&arr.some(id=>ITEMS[id]&&ITEMS[id].school));
+  return {p,v,c,fs,fl,any,school}}
+function isSchool(arr){if(arr.includes("l_school"))return true;if(arr.includes("l_self"))return false;
+  const wd=new Date().getDay();if(wd===0||wd===6)return false;return !arr.some(id=>ITEMS[id]&&ITEMS[id].meal==="l"&&ITEMS[id].food)}
+
+const MENU=[
+ {id:"latte",n:"카페라떼",c:{milk:2,bean:2}},
+ {id:"madeleine",n:"마들렌",c:{flour:2,milk:2}},
+ {id:"cookie",n:"초코칩 쿠키",c:{flour:2,bean:2,honey:1}},
+ {id:"croissant",n:"크루아상",c:{flour:3,milk:3}},
+ {id:"lemonade",n:"민트 레몬에이드",c:{lemon:3,mint:3}},
+ {id:"cake",n:"딸기 케이크",c:{berry:3,milk:4,flour:2}},
+ {id:"pudding",n:"커스터드 푸딩",c:{milk:5,honey:2,mint:2}},
+ {id:"macaron",n:"딸기 마카롱",c:{berry:5,mint:4,lemon:2}},
+ {id:"waffle",n:"딸기 와플",c:{berry:5,flour:4,bean:4,honey:2}}
+];
+const LEVELS=["작은 동네 카페","단골이 생긴 카페","소문난 카페","줄 서는 카페","꽃이 핀 카페","동네 명소","디저트 맛집","꿈의 카페"];
+const STREAK_GOALS=[{d:3,n:"화분 하나"},{d:7,n:"줄무늬 차양"},{d:14,n:"반짝 조명"},{d:30,n:"꽃 정원"}];
+const XP_I=5,XP_M=30,PER_LV=150;
+
+const blank=()=>({v:3,name:"말랑 카페",owned:[],days:{},retest:"",results:[],start:null,goal:null,bk:""});
+let S=blank();
+
+
+const pad=n=>String(n).padStart(2,"0");
+const key=d=>d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+const todayKey=()=>key(new Date());
+const $=id=>document.getElementById(id);
+
+function dayGain(arr){const g={},seen={};let xp=0;const give=(k,x=XP_I)=>{g[k]=(g[k]||0)+1;xp+=x};
+  MEALS.forEach(([m])=>{const i=mealInfo(arr,m);
+    if(i.p)give("milk");if(i.v)give("mint");if(i.fs)give("berry");if(i.p&&i.v)give("flour");
+    if(arr.includes(m+"_first")||arr.includes(m+"_f"))give("mint");if(arr.includes(m+"_w"))give("bean");if(arr.includes(m+"_c"))give("flour");});
+  if(isSchoolDay(arr)){if(arr.includes("l_sless"))give("flour");if(arr.includes("l_spass"))give("honey")}
+  arr.forEach(id=>{const it=ITEMS[id];if(!it||it.x||it.meal||it.marker)return;
+    if(it.cap){if(seen[it.cap])return;seen[it.cap]=1;give(it.cap,XP_I*2);return}
+    give(it.ing)});
+  return {g,xp}}
+function isSchoolDay(arr){return arr.includes("l_school")}
+function totals(){const inv={};Object.keys(ING).forEach(k=>inv[k]=0);let xp=0;
+  Object.values(S.days).forEach(a=>{const r=dayGain(a);xp+=r.xp;Object.entries(r.g).forEach(([k,n])=>inv[k]+=n)});
+  S.owned.forEach(id=>{const m=MENU.find(x=>x.id===id);if(m)Object.entries(m.c).forEach(([k,n])=>inv[k]-=n);xp+=XP_M});
+  return {inv,xp}}
+function level(xp){return Math.min(LEVELS.length,Math.floor(xp/PER_LV)+1)}
+function stageImg(lv){return lv<=2?"img/cafe1.png":lv<=5?"img/cafe2.png":"img/cafe3.png"}
+function exDone(k){return (S.days[k]||[]).some(id=>ITEMS[id]&&ITEMS[id].ex)}
+function streak(){let n=0,d=new Date();if(!exDone(key(d)))d.setDate(d.getDate()-1);while(exDone(key(d))){n++;d.setDate(d.getDate()-1)}return n}
+function goodCount(a){return dayGain(a).xp/XP_I}
+
+function toast(t){const el=$("toast");el.textContent=t;el.classList.add("show");clearTimeout(toast._t);toast._t=setTimeout(()=>el.classList.remove("show"),1900)}
+function modal(img,title,text,btns){$("mImg").src=img||"";$("mImg").style.display=img?"":"none";$("mTitle").textContent=title;$("mText").textContent=text;const b=$("mBtns");b.innerHTML="";btns.forEach(x=>{const e=document.createElement("button");e.className="btn "+(x.cls||"");e.style.margin="0 4px";e.textContent=x.t;e.onclick=()=>{$("modal").classList.remove("show");x.f&&x.f()};b.appendChild(e)});$("modal").classList.add("show")}
+
+const chip=(id,label,done,cls="")=>`<button class="chip ${cls} ${done.includes(id)?"on":""}" data-i="${id}" aria-pressed="${done.includes(id)}">${label}</button>`;
+let openMeal=null;
+function curMeal(){const h=new Date().getHours();return h<11?"b":h<16?"l":"d"}
+function foodChip(id,f,done){const on=done.includes(id);return `<button class="chip ${on?"on":""}" data-i="${id}" aria-pressed="${on}"><span class="dot" style="background:${CAT[f.c][1]}"></span>${f.t}</button>`}
+function mealSummary(i){if(!i.any&&!i.fs&&!i.fl)return '<span class="sub">아직 기록 없음</span>';
+  const t=[i.p?"단백질 ✓":"단백질 –",i.v?"채소 ✓":"채소 –"];if(i.fs||i.fl)t.push("과일 ✓");
+  let h=`<span class="sub">${t.join(" · ")}</span>`;if(i.p&&i.v)h+=' <span class="rw">균형 한 끼</span>';return h}
+function mealHint(i,m){if(i.school)return "";if(i.c&&!i.p)return "탄수화물만 있어요. 계란·두유·요거트·두부 중 하나를 더하면 혈당이 천천히 올라요.";
+  if(i.fl)return "과일은 좋아요! 다만 한 번에 주먹 하나 정도가 좋고, 견과나 요거트와 같이 먹으면 더 좋아요.";return ""}
+function renderLog(done){
+  if(!openMeal)openMeal=curMeal();
+  let h=`<div class="grp"><div class="gh"><span class="jua">끼니</span></div><div class="gt">먹은 음식을 그대로 고르면 단백질·채소는 자동으로 계산돼요. 밥은 이미 적게 드시니 줄이기보다 구성을 챙겨요.</div>
+  <div class="legend">${Object.values(CAT).map(([n,c])=>`<span><span class="dot" style="background:${c}"></span>${n}</span>`).join("")}</div>`;
+  MEALS.forEach(([m,ml])=>{const i=mealInfo(done,m),open=openMeal===m;
+    h+=`<div class="mealbox ${open?"open":""}"><button class="mhead" data-meal="${m}" aria-expanded="${open}"><span class="jua">${ml}</span>${mealSummary(i)}<span class="chev">${open?"▲":"▼"}</span></button>`;
+    if(open){
+      if(m==="l"&&isSchool(done)){
+        h+=`<div class="sch"><div class="gt">급식은 메뉴를 고를 수 없으니, 내가 할 수 있는 것만 챙겨요.</div><div class="chips">`+SCHOOL.map(([id,t,c])=>{const on=done.includes(id);return `<button class="chip ${on?"on":""}" data-i="${id}" aria-pressed="${on}">${c?`<span class="dot" style="background:${CAT[c][1]}"></span>`:""}${t}</button>`}).join("")+`</div><button class="link" data-mode="self">급식 아닌 날 → 음식 직접 고르기</button></div>`;
+      }else{
+        ["c","p","v","f"].forEach(c=>{h+=`<div class="chips" style="margin-top:6px">`+FOODS.filter(f=>f[2]===c).map(([f])=>foodChip(m+"_"+f,FOOD[f],done)).join("")+`</div>`});
+        h+=`<div class="chips" style="margin-top:10px">`+(m!=="b"?chipB(m+"_first","채소 먼저 먹기",done):"")+chipB(m+"_w","식후 10분 걷기",done)+`</div>`;
+        if(m==="l")h+=`<button class="link" data-mode="school">오늘 급식 먹었어요</button>`;
+      }
+      const hint=mealHint(i,m);if(hint)h+=`<div class="tip">${hint}</div>`;
+    }
+    h+=`</div>`});
+  h+=`</div>`;
+  GROUPS.forEach(g=>{h+=`<div class="grp"><div class="gh"><span class="jua">${g.t}</span>${g.cap?'<span class="rw">🍯+1 · ★+10</span>':""}</div><div class="gt">${g.tip}</div><div class="chips">`+
+    g.items.map(([id,t])=>chip(id,t,done,g.id==="sub"?"sub":g.id==="x"?"x":"")).join("")+`</div></div>`});
+  $("log").innerHTML=h;
+}
+const chipB=(id,t,done)=>chip(id,t,done,"beh");
+function render(){
+  const T=totals(),lv=level(T.xp);
+  $("cafeName").textContent=S.name;
+  $("xpTotal").textContent="★ "+T.xp;
+  $("heroImg").src=stageImg(lv);
+  $("lvText").textContent="Lv."+lv+(lv===LEVELS.length?" · MAX":"");
+  $("lvName").textContent=LEVELS[lv-1];
+  const into=T.xp-(lv-1)*PER_LV;
+  $("lvBar").style.width=(lv===LEVELS.length?100:into/PER_LV*100)+"%";
+  $("lvNext").textContent=lv===LEVELS.length?"최고 레벨 달성!":"다음 레벨까지 ★"+(PER_LV-into);
+
+  const tk=todayKey(),done=S.days[tk]||[];
+  const d=new Date();$("todayText").textContent=(d.getMonth()+1)+"월 "+d.getDate()+"일 · 오늘 ★"+dayGain(done).xp+" 모음";
+  renderLog(done);
+
+  $("inv").innerHTML=Object.entries(ING).map(([k,v])=>`<div><div class="e">${v.e}</div><div class="n">${T.inv[k]}</div><div class="l">${v.n}</div></div>`).join("");
+
+  $("menu").innerHTML=MENU.map(m=>{
+    const own=S.owned.includes(m.id);const can=!own&&Object.entries(m.c).every(([k,n])=>T.inv[k]>=n);
+    const cost=Object.entries(m.c).map(([k,n])=>ING[k].e+n).join(" ");
+    return `<div class="mi ${own?"own":can?"can":"lock"}" data-m="${m.id}" role="button" tabindex="0"><img src="img/${m.id}.png" alt="${m.n}">${can?'<span class="tag">만들기</span>':""}<div class="mn">${m.n}</div><div class="mc">${own?"판매 중":cost}</div></div>`}).join("");
+
+  const days=["일","월","화","수","목","금","토"];let w="";const last7=[];
+  for(let i=6;i>=0;i--){const dd=new Date();dd.setDate(dd.getDate()-i);const k=key(dd),a=S.days[k]||[];last7.push(a);const c=goodCount(a);
+    w+=`<div class="${i===0?"today":""}"><b class="${c>=14?"full":c>=6?"half":""}">${Math.round(c)}</b>${i===0?"오늘":days[dd.getDay()]}</div>`}
+  $("week").innerHTML=w;
+  const st=streak(),next=STREAK_GOALS.find(g=>g.d>st);
+  $("streakText").textContent=st+"일째";
+  $("streakBar").style.width=(next?st/next.d*100:100)+"%";
+  $("streakNext").textContent=next?`다음 보상: ${next.n} (${next.d}일, ${next.d-st}일 남음) · 운동을 하나라도 하면 1일`:"모든 운동 보상 획득!";
+
+  const cnt=f=>last7.reduce((s,a)=>s+a.filter(f).length,0);
+  const daysWith=f=>last7.filter(a=>a.some(f)).length;
+  const mc=f=>last7.reduce((s,a)=>s+MEALS.filter(([m])=>f(mealInfo(a,m))).length,0);
+  const prot=mc(i=>i.p),veg=mc(i=>i.v),exd=daysWith(id=>ITEMS[id]&&ITEMS[id].ex);
+  const sub=daysWith(id=>id.startsWith("s_")),xd=daysWith(id=>id==="x_drink"),xs=cnt(id=>id==="x_dessert"||id==="x_ice");
+  const sl=daysWith(id=>id==="sleep"),wa=daysWith(id=>id==="water");
+  $("report").innerHTML=[["단백질 챙긴 끼니",prot+" / 21"],["채소 먹은 끼니",veg+" / 21"],["운동한 날",exd+" / 7"],["대체 간식으로 바꾼 날",sub+"일"],["단음료 마신 날",xd+"일",1],["디저트·아이스크림",xs+"번",1],["과일 먹은 날",daysWith(id=>/_fruit[SL]$/.test(id)||id==="s_fruit")+"일"],["균형 한 끼",mc(i=>i.p&&i.v)+"번"],["7시간 잔 날",sl+" / 7"],["물 챙긴 날",wa+" / 7"]]
+    .map(([l,v,bad])=>`<div class="${bad?"bad":""}"><b>${v}</b>${l}</div>`).join("");
+  let tip;
+  if(!last7.some(a=>a.length))tip="기록이 쌓이면 이번 주 패턴에 맞는 한 줄 조언이 여기에 나와요.";
+  else if(xd>=3)tip="단음료가 잦았어요. 당길 때 무가당 라떼나 탄산수로 바꾸고 '대체 간식'을 탭해 보세요.";
+  else if(prot<10)tip="단백질 없는 끼니가 많아요. 아침에 계란이나 그릭요거트 하나부터 시작해 보세요.";
+  else if(exd<3)tip="운동한 날이 적어요. 저녁 먹고 10분 걷기 하나만 꾸준히 해도 충분히 효과가 있어요.";
+  else if(xs>=3)tip="디저트가 조금 잦았어요. 먹더라도 식사 직후 반 조각으로 줄여 보세요.";
+  else if(sl<4)tip="잠이 부족한 날이 많아요. 수면도 혈당 관리의 일부예요.";
+  else tip="이번 주 아주 잘하고 있어요! 지금 패턴을 그대로 유지하면 돼요.";
+  if(sub>0&&xd<=1)tip+=" 단음료 대신 대체 간식으로 바꾼 것도 잘했어요.";
+  $("repTip").textContent=tip;
+
+  $("gStart").textContent=S.start==null?"–":S.start;$("gGoal").textContent=S.goal==null?"–":S.goal;if(document.activeElement!==$("startIn"))$("startIn").value=S.start==null?"":S.start;if(document.activeElement!==$("goalIn"))$("goalIn").value=S.goal==null?"":S.goal;
+  $("retest").value=S.retest||"";
+  if(S.retest){const t=new Date(S.retest+"T00:00:00"),n=new Date(todayKey()+"T00:00:00");const dd=Math.round((t-n)/864e5);$("dday").textContent=dd>0?`재검까지 D-${dd}`:dd===0?"오늘이 재검일이에요!":`재검일이 ${-dd}일 지났어요. 결과를 기록해 주세요.`}
+  else $("dday").textContent="재검 날짜를 넣으면 D-day가 보여요.";
+  $("history").textContent=S.results.length?"기록: "+S.results.map(r=>r.d.slice(5).replace("-","/")+" "+r.v+"%").join(" · "):"";
+}
+
+function toggle(id){
+  const it=ITEMS[id];if(!it)return;
+  const tk=todayKey();const before=totals(),beforeLv=level(before.xp),beforeSt=streak();
+  const prev=(S.days[tk]||[]).slice();
+  let arr=prev.slice();
+  const on=arr.includes(id);
+  if(on)arr=arr.filter(x=>x!==id);
+  else{arr.push(id);
+    if(CONFLICT[id])arr=arr.filter(x=>x!==CONFLICT[id]);
+    if(it.against)arr=arr.filter(x=>!it.against.includes(x));}
+  S.days[tk]=arr;
+  const after=totals();
+  if(Object.values(after.inv).some(n=>n<0)){S.days[tk]=prev;toast("이미 메뉴에 쓴 재료라 취소할 수 없어요");return}
+  save();render();
+  if(!on){
+    if(it.meal&&!it.beh&&!it.school){const i=mealInfo(arr,it.meal),bi=mealInfo(prev,it.meal);
+      if(i.p&&i.v&&!(bi.p&&bi.v))toast("균형 한 끼 완성! 🌾 밀가루 +1");
+      else if(i.p&&!bi.p)toast("단백질 챙김! 🥛 우유 +1");
+      else if(i.v&&!bi.v)toast("채소 챙김! 🌿 민트 +1");
+      else if(it.food==="fruitS")toast("과일 적당히! 🍓 딸기 +1");
+      else toast("기록했어요");}
+    else if(it.meal||it.school){const r=dayGain(arr).g,b=dayGain(prev).g;const k=Object.keys(r).find(k=>(r[k]||0)>(b[k]||0));toast(k?ING[k].e+" "+ING[k].n+" +1":"기록했어요")}
+    else if(it.x)toast(CONFLICT[id]&&prev.includes(CONFLICT[id])?"기록했어요. 괜찮아요, 내일 다시!":"기록했어요. 점수는 그대로예요");
+    else if(it.cap){const first=!prev.some(x=>ITEMS[x]&&ITEMS[x].cap);toast(first?`좋은 교환이에요! 🍯 꿀 +1 ★+10`:"기록했어요")}
+    else toast(ING[it.ing].e+" "+ING[it.ing].n+" +1  ★+"+XP_I);
+  }
+  const st=streak(),g=STREAK_GOALS.find(g=>g.d===st);
+  if(st>beforeSt&&g)modal("img/cafe2.png","보상 획득: "+g.n,`운동 ${st}일 연속! 카페에 ${g.n}을(를) 들였어요.`,[{t:"좋아요"}]);
+  levelCheck(beforeLv);
+}
+function levelCheck(before){const lv=level(totals().xp);if(lv>before)modal(stageImg(lv),"레벨 업! Lv."+lv,`${S.name}이(가) '${LEVELS[lv-1]}'(으)로 성장했어요.`,[{t:"구경하기"}])}
+function tapMenu(id){
+  const m=MENU.find(x=>x.id===id);const img="img/"+id+".png";const inv=totals().inv;
+  if(S.owned.includes(id)){modal(img,m.n,"이미 판매 중인 메뉴예요.",[{t:"닫기",cls:"ghost"}]);return}
+  const lack=Object.entries(m.c).filter(([k,n])=>inv[k]<n).map(([k,n])=>ING[k].e+" "+ING[k].n+" "+(n-inv[k])+"개");
+  if(lack.length){modal(img,m.n,"재료가 더 필요해요: "+lack.join(", "),[{t:"닫기",cls:"ghost"}]);return}
+  const cost=Object.entries(m.c).map(([k,n])=>ING[k].e+n).join(" ");
+  modal(img,m.n+" 만들기",`재료 ${cost}를 써서 메뉴에 올릴까요? ★+${XP_M}`,[{t:"취소",cls:"ghost"},{t:"만들기",f:()=>{
+    const before=level(totals().xp);S.owned.push(id);save();render();toast(m.n+" 메뉴 추가!");setTimeout(()=>levelCheck(before),300)}}]);
+}
+
+$("log").addEventListener("click",e=>{
+  const mh=e.target.closest(".mhead");if(mh){openMeal=openMeal===mh.dataset.meal?"none":mh.dataset.meal;render();return}
+  const md=e.target.closest("[data-mode]");if(md){const tk=todayKey();let a=(S.days[tk]||[]).filter(x=>x!=="l_school"&&x!=="l_self"&&!(ITEMS[x]&&ITEMS[x].school&&x!=="l_first"&&x!=="l_w"));
+    if(md.dataset.mode==="school")a=a.filter(x=>!(ITEMS[x]&&ITEMS[x].meal==="l"&&ITEMS[x].food));
+    a.push(md.dataset.mode==="school"?"l_school":"l_self");S.days[tk]=a;
+    if(Object.values(totals().inv).some(n=>n<0)){toast("이미 메뉴에 쓴 재료라 바꿀 수 없어요");return}save();render();return}
+  const el=e.target.closest(".chip");if(el){if(el.dataset.i.startsWith("l_s")||el.dataset.i==="l_first"||el.dataset.i==="l_w")ensureSchoolMarker();toggle(el.dataset.i)}});
+function ensureSchoolMarker(){const tk=todayKey(),a=S.days[tk]=S.days[tk]||[];if(isSchool(a)&&!a.includes("l_school"))a.push("l_school")}
+$("menu").addEventListener("click",e=>{const el=e.target.closest(".mi");if(el)tapMenu(el.dataset.m)});
+$("menu").addEventListener("keydown",e=>{if((e.key===" "||e.key==="Enter")&&e.target.dataset.m){e.preventDefault();tapMenu(e.target.dataset.m)}});
+$("retest").addEventListener("change",e=>{S.retest=e.target.value;save();render()});
+$("latest").addEventListener("input",()=>$("latestErr").textContent="");
+$("saveLatest").addEventListener("click",()=>{const v=parseFloat($("latest").value);if(!(v>=3&&v<=15)){$("latestErr").textContent="3~15 사이 숫자로 입력해 주세요";return}
+  S.results.push({d:todayKey(),v:Math.round(v*10)/10});$("latest").value="";save();render();toast(S.goal!=null&&v<=S.goal?"목표 달성! 정말 대단해요":"기록했어요")});
+$("saveGoal").addEventListener("click",()=>{const a=$("startIn").value===""?null:parseFloat($("startIn").value),b=$("goalIn").value===""?null:parseFloat($("goalIn").value);
+  const bad=x=>x!=null&&!(x>=3&&x<=15);if(bad(a)||bad(b)){$("goalErr").textContent="3~15 사이 숫자로 입력해 주세요";return}
+  $("goalErr").textContent="";S.start=a;S.goal=b;save();render();toast("저장했어요")});
+$("rename").addEventListener("click",()=>{
+  const b=$("mBtns");modal("","카페 이름 바꾸기","",[]);
+  $("mText").innerHTML='<input type="text" id="nmIn" maxlength="14" style="width:100%">';$("nmIn").value=S.name;
+  const ok=document.createElement("button");ok.className="btn";ok.textContent="저장";ok.onclick=()=>{const v=$("nmIn").value.trim();if(!v){$("nmIn").style.borderColor="#C0392B";return}S.name=v;$("modal").classList.remove("show");save();render()};
+  const cc=document.createElement("button");cc.className="btn ghost";cc.style.marginRight="8px";cc.textContent="취소";cc.onclick=()=>$("modal").classList.remove("show");
+  b.append(cc,ok);
+});
+$("modal").addEventListener("click",e=>{if(e.target.id==="modal")$("modal").classList.remove("show")});
+
+
+function backupText(){return "MALLANGCAFE:"+btoa(unescape(encodeURIComponent(JSON.stringify(S))))}
+$("bkCopy").addEventListener("click",async()=>{const t=backupText(),n=Object.keys(S.days).length;
+  const out=$("bkOut");out.value=t;
+  try{await navigator.clipboard.writeText(t);out.style.display="none";$("bkInfo").textContent=`복사됨 · ${n}일치 기록`;toast("백업을 복사했어요. 메모에 붙여 두세요");S.bk=todayKey();save()}
+  catch(e){out.style.display="block";out.focus();out.select();$("bkInfo").textContent="아래 글자를 길게 눌러 전체 복사해 주세요"}});
+$("bkIn").addEventListener("input",()=>$("bkErr").textContent="");
+$("bkLoad").addEventListener("click",()=>{const raw=$("bkIn").value.trim();
+  if(!raw){$("bkErr").textContent="백업 글자를 먼저 붙여 넣어 주세요";return}
+  let o;try{o=JSON.parse(decodeURIComponent(escape(atob(raw.replace(/^MALLANGCAFE:/,"")))));if(!o||typeof o.days!=="object")throw 0}
+  catch(e){$("bkErr").textContent="백업 글자가 올바르지 않아요. 처음부터 끝까지 전부 복사했는지 확인해 주세요";return}
+  const n=Object.keys(o.days).length;
+  modal("","백업 불러오기",`${n}일치 기록으로 바꿀까요? 지금 화면의 기록은 이 백업으로 덮어써져요.`,[{t:"취소",cls:"ghost"},{t:"불러오기",f:()=>{S=merge(o);S.t=Date.now();$("bkIn").value="";save();render();toast("백업을 불러왔어요")}}]);
+});
+function lsGet(){try{const r=localStorage.getItem("mallang-cafe");return r?JSON.parse(r):null}catch(e){return null}}
+function lsSet(){try{localStorage.setItem("mallang-cafe",JSON.stringify(S))}catch(e){}}
+function save(){S.t=Date.now();lsSet();renderSave()}
+function renderSave(){let t="이 기기에 저장돼요 · ";
+  if(S.bk){const n=Math.round((new Date(todayKey()+"T00:00:00")-new Date(S.bk+"T00:00:00"))/864e5);t+=n<=0?"오늘 백업했어요":"마지막 백업 "+n+"일 전"}
+  else t+=Object.keys(S.days).length?"아직 백업 안 했어요. 아래 '백업 복사'를 눌러 두세요":"기록하면 이 기기에 남아요";
+  $("saveState").textContent=t}function merge(o){const b=blank();o=o||{};const r=Object.assign(b,o);
+  if(o.v===2)r.v=3;
+  if(!o.v||o.v<2){const days={};Object.entries(o.days||{}).forEach(([k,a])=>{days[k]=[...new Set(a.map(x=>OLD[x]||x).filter(x=>ITEMS[x]))]});r.days=days;delete r.inv;delete r.xp;r.v=3}
+  return r}
+
+const local=lsGet();if(local)S=merge(local);
+render();renderSave();
+if("serviceWorker" in navigator&&location.protocol.startsWith("http"))navigator.serviceWorker.register("sw.js").catch(()=>{});
+</script>
+</body>
+</html>
