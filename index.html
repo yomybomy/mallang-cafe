@@ -203,7 +203,7 @@ const MEALS=[["b","아침"],["l","점심"],["d","저녁"]];
 const CAT={c:["탄수","#F2C14E"],p:["단백질","#EE7FA6"],v:["채소","#7BC47F"],f:["과일","#F59A5B"]};
 const FOODS=[
  ["rice","밥","c"],["nurung","누룽지","c"],["bread","빵·떡","c"],["noodle","면","c"],["potato","고구마·감자·옥수수","c"],["porridge","죽","c"],
- ["egg","계란","p"],["meat","고기","p"],["fish","생선·해산물","p"],["tofu","두부·콩","p"],["yog","그릭요거트","p"],["soy","두유·우유","p"],["cheese","치즈","p"],["nuts","견과","p"],
+ ["egg","계란","p"],["meat","고기","p"],["fish","생선·해산물·북어","p"],["tofu","두부·콩","p"],["yog","그릭요거트","p"],["soy","두유·우유","p"],["cheese","치즈","p"],["nuts","견과","p"],
  ["veg","채소·나물","v"],["salad","샐러드·쌈","v"],["kimchi","김치","v"],["mush","버섯·해조류","v"],
  ["fruitS","과일 조금 (주먹 하나 이하)","f"],["fruitL","과일 많이","f"]
 ];
@@ -258,7 +258,7 @@ const LEVELS=["작은 동네 카페","단골이 생긴 카페","소문난 카페
 const STREAK_GOALS=[{d:3,n:"화분 하나"},{d:7,n:"줄무늬 차양"},{d:14,n:"반짝 조명"},{d:30,n:"꽃 정원"}];
 const XP_I=5,XP_M=30,PER_LV=150;
 
-const blank=()=>({v:3,name:"말랑 카페",owned:[],days:{},retest:"",results:[],start:null,goal:null,bk:""});
+const blank=()=>({v:3,name:"말랑 카페",owned:[],days:{},retest:"",results:[],start:null,goal:null,bk:"",custom:[]});
 let S=blank();
 
 
@@ -311,7 +311,8 @@ function renderLog(done){
       }else{
         ["c","p","v","f"].forEach(c=>{h+=`<div class="chips" style="margin-top:6px">`+FOODS.filter(f=>f[2]===c).map(([f])=>foodChip(m+"_"+f,FOOD[f],done)).join("")+`</div>`});
         h+=`<div class="chips" style="margin-top:10px">`+(m!=="b"?chipB(m+"_first","채소 먼저 먹기",done):"")+chipB(m+"_w","식후 10분 걷기",done)+`</div>`;
-        if(m==="l")h+=`<button class="link" data-mode="school">오늘 급식 먹었어요</button>`;
+        h+=`<button class="link" data-add="${m}">+ 목록에 없는 음식 직접 추가</button>`;
+        if(m==="l")h+=` <button class="link" data-mode="school">오늘 급식 먹었어요</button>`;
       }
       const hint=mealHint(i,m);if(hint)h+=`<div class="tip">${hint}</div>`;
     }
@@ -323,6 +324,7 @@ function renderLog(done){
 }
 const chipB=(id,t,done)=>chip(id,t,done,"beh");
 function render(){
+  regCustom();
   const T=totals(),lv=level(T.xp);
   $("cafeName").textContent=S.name;
   $("xpTotal").textContent="★ "+T.xp;
@@ -421,12 +423,35 @@ function tapMenu(id){
 }
 
 $("log").addEventListener("click",e=>{
+  const ad=e.target.closest("[data-add]");if(ad){addFoodModal(ad.dataset.add);return}
   const mh=e.target.closest(".mhead");if(mh){openMeal=openMeal===mh.dataset.meal?"none":mh.dataset.meal;render();return}
   const md=e.target.closest("[data-mode]");if(md){const tk=todayKey();let a=(S.days[tk]||[]).filter(x=>x!=="l_school"&&x!=="l_self"&&!(ITEMS[x]&&ITEMS[x].school&&x!=="l_first"&&x!=="l_w"));
     if(md.dataset.mode==="school")a=a.filter(x=>!(ITEMS[x]&&ITEMS[x].meal==="l"&&ITEMS[x].food));
     a.push(md.dataset.mode==="school"?"l_school":"l_self");S.days[tk]=a;
     if(Object.values(totals().inv).some(n=>n<0)){toast("이미 메뉴에 쓴 재료라 바꿀 수 없어요");return}save();render();return}
   const el=e.target.closest(".chip");if(el){if(el.dataset.i.startsWith("l_s")||el.dataset.i==="l_first"||el.dataset.i==="l_w")ensureSchoolMarker();toggle(el.dataset.i)}});
+function addFoodModal(m){
+  modal("","음식 직접 추가","",[]);
+  const used=id=>Object.values(S.days).some(a=>MEALS.some(([mm])=>a.includes(mm+"_"+id)));
+  const list=(S.custom||[]).map(c=>`<span class="chip" style="cursor:default"><span class="dot" style="background:${CAT[c.c][1]}"></span>${c.t.replace(/</g,"&lt;")} <b data-del="${c.id}" style="cursor:pointer;padding:0 2px">×</b></span>`).join(" ");
+  $("mText").innerHTML=`<div class="gt" style="margin-bottom:8px">이름과 종류를 고르면 앞으로 모든 끼니에 칩으로 생겨요. 예: 북어국 → 단백질</div>
+  <input type="text" id="cfIn" maxlength="14" placeholder="예: 북어국" style="width:100%">
+  <div class="chips" id="cfCat" style="margin:10px 0 6px">${Object.entries(CAT).map(([k,[n,c]])=>`<button class="chip ${k==="p"?"on":""}" data-c="${k}"><span class="dot" style="background:${c}"></span>${n}</button>`).join("")}</div>
+  ${list?`<div class="gt" style="margin-top:10px">내가 추가한 음식 (×로 삭제)</div><div class="chips" id="cfList">${list}</div>`:""}`;
+  let cat="p";
+  $("cfCat").onclick=e=>{const b=e.target.closest("[data-c]");if(!b)return;cat=b.dataset.c;$("cfCat").querySelectorAll(".chip").forEach(x=>x.classList.toggle("on",x===b))};
+  const cl=$("cfList");if(cl)cl.onclick=e=>{const d=e.target.closest("[data-del]");if(!d)return;const id=d.dataset.del;
+    if(used(id)){toast("기록에 쓴 음식이라 삭제할 수 없어요");return}
+    S.custom=S.custom.filter(c=>c.id!==id);delete FOOD[id];const i=FOODS.findIndex(f=>f[0]===id);if(i>=0)FOODS.splice(i,1);MEALS.forEach(([mm])=>delete ITEMS[mm+"_"+id]);
+    $("modal").classList.remove("show");save();render();toast("삭제했어요")};
+  const b=$("mBtns");
+  const ok=document.createElement("button");ok.className="btn";ok.textContent="추가하고 기록";
+  ok.onclick=()=>{const t=$("cfIn").value.trim();if(!t){$("cfIn").style.borderColor="#C0392B";return}
+    const id="u"+Date.now().toString(36);S.custom=S.custom||[];S.custom.push({id,t,c:cat});regCustom();
+    $("modal").classList.remove("show");save();toggle(m+"_"+id)};
+  const cc=document.createElement("button");cc.className="btn ghost";cc.style.marginRight="8px";cc.textContent="닫기";cc.onclick=()=>$("modal").classList.remove("show");
+  b.append(cc,ok);$("cfIn").focus()}
+function regCustom(){(S.custom||[]).forEach(({id,t,c})=>{if(FOOD[id])return;FOOD[id]={t,c};FOODS.push([id,t,c]);MEALS.forEach(([m])=>add(m+"_"+id,{meal:m,food:id}))})}
 function ensureSchoolMarker(){const tk=todayKey(),a=S.days[tk]=S.days[tk]||[];if(isSchool(a)&&!a.includes("l_school"))a.push("l_school")}
 $("menu").addEventListener("click",e=>{const el=e.target.closest(".mi");if(el)tapMenu(el.dataset.m)});
 $("menu").addEventListener("keydown",e=>{if((e.key===" "||e.key==="Enter")&&e.target.dataset.m){e.preventDefault();tapMenu(e.target.dataset.m)}});
