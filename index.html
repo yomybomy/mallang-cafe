@@ -200,12 +200,13 @@ input[type=number]{width:80px}
 
 const ING={milk:{e:"🥛",n:"우유"},mint:{e:"🌿",n:"민트"},berry:{e:"🍓",n:"딸기"},flour:{e:"🌾",n:"밀가루"},bean:{e:"☕",n:"커피콩"},lemon:{e:"🍋",n:"레몬"},honey:{e:"🍯",n:"꿀"}};
 const MEALS=[["b","아침"],["l","점심"],["d","저녁"]];
-const CAT={c:["탄수","#F2C14E"],p:["단백질","#EE7FA6"],v:["채소","#7BC47F"],f:["과일","#F59A5B"]};
+const CAT={c:["탄수","#F2C14E"],p:["단백질","#EE7FA6"],v:["채소","#7BC47F"],f:["과일","#F59A5B"],s:["국물","#B9A89E"]};
 const FOODS=[
  ["rice","밥","c"],["nurung","누룽지","c"],["bread","빵·떡","c"],["noodle","면","c"],["potato","고구마·감자·옥수수","c"],["porridge","죽","c"],
  ["egg","계란","p"],["meat","고기","p"],["fish","생선·해산물·북어","p"],["tofu","두부·콩","p"],["yog","그릭요거트","p"],["soy","두유·우유","p"],["cheese","치즈","p"],["nuts","견과","p"],
  ["veg","채소·나물","v"],["salad","샐러드·쌈","v"],["kimchi","김치","v"],["mush","버섯·해조류","v"],
- ["fruitS","과일 조금 (주먹 하나 이하)","f"],["fruitL","과일 많이","f"]
+ ["fruitS","과일 조금 (주먹 하나 이하)","f"],["fruitL","과일 많이","f"],
+ ["guk","국·찌개·탕","s"]
 ];
 const FOOD={};FOODS.forEach(([id,t,c])=>FOOD[id]={t,c});
 const SCHOOL=[["l_sp","단백질 반찬 챙겨 먹음","p"],["l_sv","채소 반찬 먹음","v"],["l_first","채소·반찬 먼저"],["l_sless","밥 조금 덜기"],["l_spass","후식·단음료 패스"],["l_w","식후 10분 걷기"]];
@@ -309,7 +310,7 @@ function renderLog(done){
       if(m==="l"&&isSchool(done)){
         h+=`<div class="sch"><div class="gt">급식은 메뉴를 고를 수 없으니, 내가 할 수 있는 것만 챙겨요.</div><div class="chips">`+SCHOOL.map(([id,t,c])=>{const on=done.includes(id);return `<button class="chip ${on?"on":""}" data-i="${id}" aria-pressed="${on}">${c?`<span class="dot" style="background:${CAT[c][1]}"></span>`:""}${t}</button>`}).join("")+`</div><button class="link" data-mode="self">급식 아닌 날 → 음식 직접 고르기</button></div>`;
       }else{
-        ["c","p","v","f"].forEach(c=>{h+=`<div class="chips" style="margin-top:6px">`+FOODS.filter(f=>f[2]===c).map(([f])=>foodChip(m+"_"+f,FOOD[f],done)).join("")+`</div>`});
+        ["c","p","v","f","s"].forEach(c=>{h+=`<div class="chips" style="margin-top:6px">`+FOODS.filter(f=>f[2]===c).map(([f])=>foodChip(m+"_"+f,FOOD[f],done)).join("")+`</div>`});
         h+=`<div class="chips" style="margin-top:10px">`+(m!=="b"?chipB(m+"_first","채소 먼저 먹기",done):"")+chipB(m+"_w","식후 10분 걷기",done)+`</div>`;
         h+=`<button class="link" data-add="${m}">+ 목록에 없는 음식 직접 추가</button>`;
         if(m==="l")h+=` <button class="link" data-mode="school">오늘 급식 먹었어요</button>`;
@@ -436,7 +437,7 @@ function addFoodModal(m){
   const list=(S.custom||[]).map(c=>`<span class="chip" style="cursor:default"><span class="dot" style="background:${CAT[c.c][1]}"></span>${c.t.replace(/</g,"&lt;")} <b data-del="${c.id}" style="cursor:pointer;padding:0 2px">×</b></span>`).join(" ");
   $("mText").innerHTML=`<div class="gt" style="margin-bottom:8px">이름과 종류를 고르면 앞으로 모든 끼니에 칩으로 생겨요. 예: 북어국 → 단백질</div>
   <input type="text" id="cfIn" maxlength="14" placeholder="예: 북어국" style="width:100%">
-  <div class="chips" id="cfCat" style="margin:10px 0 6px">${Object.entries(CAT).map(([k,[n,c]])=>`<button class="chip ${k==="p"?"on":""}" data-c="${k}"><span class="dot" style="background:${c}"></span>${n}</button>`).join("")}</div>
+  <div class="chips" id="cfCat" style="margin:10px 0 6px">${Object.entries(CAT).filter(([k])=>k!=="s").map(([k,[n,c]])=>`<button class="chip ${k==="p"?"on":""}" data-c="${k}"><span class="dot" style="background:${c}"></span>${n}</button>`).join("")}</div>
   ${list?`<div class="gt" style="margin-top:10px">내가 추가한 음식 (×로 삭제)</div><div class="chips" id="cfList">${list}</div>`:""}`;
   let cat="p";
   $("cfCat").onclick=e=>{const b=e.target.closest("[data-c]");if(!b)return;cat=b.dataset.c;$("cfCat").querySelectorAll(".chip").forEach(x=>x.classList.toggle("on",x===b))};
