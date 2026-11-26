@@ -129,6 +129,15 @@ input[type=number]{width:80px}
   </div>
 
   <div class="card">
+    <h2>말이나 글로 한 번에 기록</h2>
+    <div class="sub">먹은 것을 적거나 말하면 칩이 대신 눌려요. 아침·점심·저녁을 같이 쓰면 더 정확해요. 기록 전에 미리보기로 확인해요.</div>
+    <textarea id="qText" placeholder="예) 아침 밥, 북어국, 김치 / 점심 샐러드, 닭가슴살 / 저녁 두부, 시금치나물" style="width:100%;height:76px;margin-top:8px;font-size:14px;border:2px solid var(--line);border-radius:12px;padding:8px;background:#fff;color:var(--brown);font-family:inherit"></textarea>
+    <div class="row"><label class="sub">날짜 <input type="date" id="qDate"></label><button class="btn ghost" id="qMic">🎤 말하기</button><button class="btn y" id="qGo">기록하기</button></div>
+    <div class="err" id="qErr"></div>
+    <div class="sub" id="qHint" style="margin-top:4px"></div>
+  </div>
+
+  <div class="card">
     <h2>재료 창고</h2>
     <div class="inv" id="inv"></div>
     <div class="sub" style="margin-top:8px">좋은 습관을 기록하면 재료가 들어와요. 재료로 새 메뉴를 만들어요.</div>
@@ -172,6 +181,16 @@ input[type=number]{width:80px}
     </div>
     <div class="err" id="latestErr"></div>
     <div class="sub" id="history" style="margin-top:6px"></div>
+  </div>
+
+  <div class="card">
+    <h2>기록 내보내기 (엑셀)</h2>
+    <div class="sub">기간을 고르면 날짜별 표(CSV)로 받아요. 엑셀이나 구글 시트에서 바로 열려요. 기록이 있는 날만 들어가요.</div>
+    <div class="row"><label class="sub">시작 <input type="date" id="exFrom"></label><label class="sub">끝 <input type="date" id="exTo"></label></div>
+    <div class="row"><button class="btn ghost" id="exThis">이번 달</button><button class="btn ghost" id="exPrev">지난 달</button><button class="btn ghost" id="exAll">전체</button></div>
+    <div class="row"><button class="btn y" id="exCsv">파일로 받기</button><button class="btn ghost" id="exCopy">표 복사</button></div>
+    <div class="err" id="exErr"></div>
+    <div class="sub">폰에서 파일이 안 열리면 '표 복사'를 누르고 구글 시트나 엑셀에 붙여 넣으세요.</div>
   </div>
 
   <div class="card">
@@ -453,6 +472,118 @@ function addFoodModal(m){
   const cc=document.createElement("button");cc.className="btn ghost";cc.style.marginRight="8px";cc.textContent="닫기";cc.onclick=()=>$("modal").classList.remove("show");
   b.append(cc,ok);$("cfIn").focus()}
 function regCustom(){(S.custom||[]).forEach(({id,t,c})=>{if(FOOD[id])return;FOOD[id]={t,c};FOODS.push([id,t,c]);MEALS.forEach(([m])=>add(m+"_"+id,{meal:m,food:id}))})}
+/* ---------- 기록 내보내기 (CSV) ---------- */
+function itemLabel(id){const it=ITEMS[id];if(!it)return null;
+  if(it.food)return FOOD[it.food].t;
+  if(it.legacy)return {p:"단백질",v:"채소",c:"탄수",first:"채소 먼저"}[it.legacy]||null;
+  if(it.beh)return id.endsWith("_first")?"채소 먼저":"식후 걷기";
+  if(it.school){const s=SCHOOL.find(x=>x[0]===id);return s?s[1]:null}
+  if(it.marker)return id==="l_school"?"급식":null;
+  return it.t||null}
+function exportRows(from,to){
+  const head=["날짜","아침","점심","저녁","단백질 챙긴 끼니","채소 먹은 끼니","운동","간식·음료","대체 간식","생활 습관","솔직 기록"];
+  const rows=[head];
+  Object.keys(S.days).sort().filter(k=>k>=from&&k<=to&&S.days[k].length).forEach(k=>{
+    const a=S.days[k];
+    const meal=m=>a.filter(id=>ITEMS[id]&&ITEMS[id].meal===m).map(itemLabel).filter(Boolean).join(", ");
+    const grp=g=>a.filter(id=>ITEMS[id]&&ITEMS[id].grp===g).map(itemLabel).filter(Boolean).join(", ");
+    rows.push([k,meal("b"),meal("l"),meal("d"),MEALS.filter(([m])=>mealInfo(a,m).p).length,MEALS.filter(([m])=>mealInfo(a,m).v).length,grp("ex"),grp("sn"),grp("sub"),grp("life"),grp("x")])});
+  return rows}
+function exportRange(){const f=$("exFrom").value,t=$("exTo").value;
+  if(!f||!t||f>t){$("exErr").textContent="시작일과 끝나는 날을 확인해 주세요";return null}
+  $("exErr").textContent="";const rows=exportRows(f,t);
+  if(rows.length<2){$("exErr").textContent="이 기간에는 기록이 없어요";return null}
+  return {rows,f,t}}
+$("exCsv").addEventListener("click",()=>{const r=exportRange();if(!r)return;
+  const csv="﻿"+r.rows.map(row=>row.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(",")).join("\r\n");
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));
+  a.download=`말랑기록_${r.f}_${r.t}.csv`;document.body.appendChild(a);a.click();
+  setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500);toast(`${r.rows.length-1}일치 표를 만들었어요`)});
+$("exCopy").addEventListener("click",async()=>{const r=exportRange();if(!r)return;
+  const tsv=r.rows.map(row=>row.map(c=>String(c).replace(/[\t\r\n]+/g," ")).join("\t")).join("\n");
+  try{await navigator.clipboard.writeText(tsv);toast("표를 복사했어요. 시트에 붙여 넣으세요")}catch(e){$("exErr").textContent="복사가 막혀 있어요. '파일로 받기'를 써 주세요"}});
+function setRange(f,t){$("exFrom").value=f;$("exTo").value=t}
+$("exThis").addEventListener("click",()=>{const n=new Date();setRange(key(new Date(n.getFullYear(),n.getMonth(),1)),todayKey())});
+$("exPrev").addEventListener("click",()=>{const n=new Date();setRange(key(new Date(n.getFullYear(),n.getMonth()-1,1)),key(new Date(n.getFullYear(),n.getMonth(),0)))});
+$("exAll").addEventListener("click",()=>{const ks=Object.keys(S.days).filter(k=>S.days[k].length).sort();setRange(ks[0]||todayKey(),ks.length?ks[ks.length-1]:todayKey())});
+
+/* ---------- 말·글로 한 번에 기록 ---------- */
+// "/"로 구분한 낱말 → 칩. 긴 낱말부터 먼저 찾아서 '북어국'은 북어+국, '김치'는 김과 따로 잡혀요.
+const DICT=[
+ [["rice"],"밥/쌀밥/잡곡밥/현미밥/공기밥/비빔밥/볶음밥/덮밥/주먹밥/곤드레밥"],[["rice","mush"],"김밥"],[["rice","fish"],"초밥"],[["rice","guk"],"국밥"],
+ [["nurung"],"누룽지"],
+ [["bread"],"빵/떡/토스트/샌드위치/베이글/식빵/머핀/떡볶이/호떡"],[["bread","guk"],"떡국"],
+ [["noodle"],"면/국수/라면/파스타/우동/짜장면/짬뽕/냉면/스파게티/칼국수/쫄면/수제비/비빔면"],
+ [["potato"],"고구마/감자/옥수수"],[["meat","guk"],"감자탕"],
+ [["porridge"],"죽/호박죽/전복죽/흰죽"],
+ [["egg"],"계란/달걀/에그/오믈렛/계란찜/계란말이/달걀말이/스크램블/프라이/후라이"],
+ [["meat"],"고기/소고기/돼지고기/닭고기/닭가슴살/닭/돼지/삼겹살/불고기/햄/소시지/스테이크/갈비/치킨/제육/수육/목살/보쌈/오리/순대/베이컨/탕수육"],
+ [["fish"],"생선/해산물/북어/황태/고등어/갈치/연어/오징어/새우/멸치/참치/조기/꽁치/명태/동태/조개/낙지/문어/전복/꽃게/장어/가자미"],
+ [["tofu"],"두부/콩/순두부/청국장/콩자반"],
+ [["yog"],"요거트/요구르트/그릭요거트/그릭"],
+ [["soy"],"두유/우유"],[["cheese"],"치즈"],
+ [["nuts"],"견과/견과류/아몬드/호두/땅콩/캐슈넛"],
+ [["veg"],"채소/야채/나물/시금치/콩나물/브로콜리/당근/오이/양배추/무침/가지/호박/파프리카/상추/깻잎/부추/배추/시래기"],
+ [["salad"],"샐러드/쌈/쌈채소"],
+ [["kimchi"],"김치/깍두기/총각김치/겉절이/열무김치/파김치"],
+ [["mush"],"버섯/미역/김/다시마/해조류/파래/톳/매생이/청각"],
+ [["fruitL"],"과일 많이/과일많이"],
+ [["fruitS"],"과일/사과/바나나/귤/딸기/포도/키위/수박/참외/복숭아/블루베리/오렌지/토마토/방울토마토/자두/단감/홍시/곶감"],
+ [["guk"],"국/찌개/탕/전골/국물/해장국"],
+ [[],"설탕/사탕/탕후루"],
+ [["@first"],"채소 먼저/채소먼저/야채 먼저/야채먼저/반찬 먼저/채소부터"],
+ [["@w"],"걷기/산책/걸었"]
+];
+const NEG=/^(안|못)$|안먹|못먹|안마|안드|못마|않|없|말고|빼고|제외|거름|걸렀/;
+const IGN=/(먹|마시|마셨|했|함$|드셨|드심|식후|오늘|조금|많이|약간|정도|같이|함께|그리고|아침|점심|저녁)/;
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function parseMeals(text,defMeal){
+  const kws=[];DICT.concat((S.custom||[]).map(c=>[[c.id],c.t])).forEach(([ids,w])=>w.split("/").forEach(x=>{x=x.trim();if(x)kws.push([x,ids])}));
+  kws.sort((a,b)=>b[0].length-a[0].length);
+  const res={b:[],l:[],d:[]},skipped=[],unk=[];let m=defMeal;
+  text.split(/(아침|조식|점심|중식|저녁|석식)/).forEach(p=>{
+    if(p==="아침"||p==="조식"){m="b";return}if(p==="점심"||p==="중식"){m="l";return}if(p==="저녁"||p==="석식"){m="d";return}
+    p.split(/[,，、\/·\n.;+&]|이랑|하고|그리고|랑|및/).forEach(cl=>{
+      const words=cl.replace(/(채소|야채|반찬)\s+먼저/g,"$1먼저").replace(/과일\s+많이/g,"과일많이").trim().split(/\s+/).filter(Boolean);
+      const neg=new Set();words.forEach((w,i)=>{if(NEG.test(w)){neg.add(i-1);if(!/^(안|못)$/.test(w))neg.add(i)}});
+      words.forEach((w,i)=>{
+        if(neg.has(i)){if(w.length>=2&&!NEG.test(w))skipped.push(w);return}
+        let s=w;kws.forEach(([k,ids])=>{k=k.replace(/\s+/g,"");while(s.includes(k)){s=s.replace(k," ");ids.forEach(id=>{
+          const full=id[0]==="@"?(id==="@first"?(m==="b"?null:m+"_first"):m+"_w"):m+"_"+id;
+          if(full&&ITEMS[full]&&!res[m].includes(full))res[m].push(full)})}});
+        s.split(/\s+/).map(t=>t.replace(/(을|를|은|는|이|가|도|만|으로|로|에서|에)$/,"")).filter(t=>t.length>=2&&!IGN.test(t)&&!/\d/.test(t)).forEach(t=>{if(!unk.includes(t))unk.push(t)})})})});
+  return {res,skipped,unk}}
+$("qGo").addEventListener("click",()=>{
+  const text=$("qText").value.trim();$("qErr").textContent="";
+  if(!text){$("qErr").textContent="먹은 것을 먼저 적거나 말해 주세요";return}
+  const dk=$("qDate").value||todayKey();if(dk>todayKey()){$("qErr").textContent="오늘 이후 날짜는 기록할 수 없어요";return}
+  const {res,skipped,unk}=parseMeals(text,dk===todayKey()?curMeal():"l");
+  const all=[].concat(res.b,res.l,res.d);
+  const rows=MEALS.filter(([m])=>res[m].length).map(([m,ml])=>`<div style="text-align:left;margin:4px 0"><b class="jua">${ml}</b> ${res[m].map(id=>esc(itemLabel(id))).join(" · ")}</div>`).join("");
+  const extra=(skipped.length?`<div style="text-align:left;margin-top:8px;font-size:12px">'안 먹음' 표현이라 건너뛴 말: ${skipped.map(esc).join(", ")}</div>`:"")+(unk.length?`<div style="text-align:left;margin-top:6px;font-size:12px">못 찾은 말: ${unk.map(esc).join(", ")}<br>→ 칩을 직접 누르거나 '직접 추가'를 써 주세요</div>`:"");
+  const d=new Date(dk+"T00:00:00"),dl=(d.getMonth()+1)+"월 "+d.getDate()+"일";
+  if(!all.length){modal("","음식을 못 찾았어요","",[{t:"닫기",cls:"ghost"}]);$("mText").innerHTML="적어 주신 말에서 아는 음식이 없었어요."+extra;return}
+  modal("",dl+" 기록할까요?","",[{t:"취소",cls:"ghost"},{t:"기록하기",f:()=>applyParsed(dk,all)}]);
+  $("mText").innerHTML=rows+extra});
+function applyParsed(dk,ids){
+  const beforeLv=level(totals().xp);let arr=(S.days[dk]||[]).slice();const had=arr.length;
+  if(ids.some(id=>id.startsWith("l_")&&ITEMS[id].food)){
+    arr=arr.filter(x=>x!=="l_school"&&!(ITEMS[x]&&ITEMS[x].school&&x!=="l_first"&&x!=="l_w"));if(!arr.includes("l_self"))arr.push("l_self")}
+  let n=0;ids.forEach(id=>{if(!arr.includes(id)){arr.push(id);n++}});
+  S.days[dk]=arr;save();render();$("qText").value="";
+  toast(n?`${n}개 기록했어요`:"이미 모두 기록돼 있어요");levelCheck(beforeLv)}
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+$("qHint").textContent=SR?"🎤를 누르고 말한 뒤 다시 누르면 글로 바뀌어요. 바뀐 글을 확인하고 '기록하기'를 눌러요.":"이 브라우저는 말하기 버튼이 없어요. 폰 키보드의 마이크(받아쓰기) 버튼으로 말해도 똑같이 돼요.";
+if(!SR)$("qMic").style.display="none";
+else{let rec=null,on=false;$("qMic").addEventListener("click",()=>{
+  if(on){rec&&rec.stop();return}
+  rec=new SR();rec.lang="ko-KR";rec.interimResults=false;rec.continuous=false;
+  rec.onstart=()=>{on=true;$("qMic").textContent="■ 듣는 중 (누르면 끝)"};
+  rec.onend=()=>{on=false;$("qMic").textContent="🎤 말하기"};
+  rec.onerror=e=>{$("qErr").textContent=e.error==="not-allowed"?"마이크 사용을 허용해 주세요":"음성 인식이 잘 안 됐어요. 다시 눌러 주세요"};
+  rec.onresult=e=>{const t=[...e.results].map(r=>r[0].transcript).join(" ");const q=$("qText");q.value=(q.value?q.value+" ":"")+t};
+  $("qErr").textContent="";try{rec.start()}catch(_){}})}
+(function(){const n=new Date();$("qDate").value=todayKey();$("qDate").max=todayKey();setRange(key(new Date(n.getFullYear(),n.getMonth(),1)),todayKey())})();
 function ensureSchoolMarker(){const tk=todayKey(),a=S.days[tk]=S.days[tk]||[];if(isSchool(a)&&!a.includes("l_school"))a.push("l_school")}
 $("menu").addEventListener("click",e=>{const el=e.target.closest(".mi");if(el)tapMenu(el.dataset.m)});
 $("menu").addEventListener("keydown",e=>{if((e.key===" "||e.key==="Enter")&&e.target.dataset.m){e.preventDefault();tapMenu(e.target.dataset.m)}});
